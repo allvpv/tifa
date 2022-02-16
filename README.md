@@ -1,24 +1,20 @@
 # :sparkles: `tifa` :sparkles:
-### :sparkles: `tifa` :sparkles: exposes the musl libc with zero-cost c++ interfaces
+### `tifa` wraps the c library in zero-cost c++ interfaces
 
-templates and v-tables often come in handy. however, the standard c++ library,
-with an emphasis on platform-independence, without the direct access to system
-calls, with invisible dynamic allocations going on behind the scenes, is not
-very well suited for system programming or embedded development
+`tifa` is an extensively documented, zero-cost wrapper over the c library with
+plenty of useful interfaces for c++ programmers. you can avoid linking against
+`libstdc++` or `libc++` and produce tiny binaries while enjoying some of the
+convenient c++ features like lambdas, templates, concepts or v-tables
 
-`tifa` is nothing more than extensively documented header-only wrapper over musl
-libc with a lot of handy interfaces for c++ programmers. with the help of `tifa`
-you can avoid linking `libstdc++` or `libc++` altogether, while still enjoying
-convinient c++ features
+### [`TIFA` TOUR GUIDE AND DOCUMENTATION](https://docs.google.com/document/d/1y0WAcwc1vPNr1DtXBhqUYfmQDTqg9BjG_Rx1onTU3UI/edit?usp=sharing)
 
-`tifa` encourages direct memory-management. it does not compromise on security,
-though. with the help of template parameters, `void*` pointers are not needed.
-optional bound-checking and other safety checks are also implemented where
-possible and enabled by default in debug mode
+### <p></p>
 
-:construction: the description above is an idea :construction:
-right now, almost nothing is implemented. anyone is more than welcome to
-contribute
+i plan to maintain compatibility with both `glibc` and `musl`
+
+everyone is more than welcome to contribute
+
+:construction: right now none of this is implemented :construction:
 
 - [ ] memory mappings
 - [ ] input/output
@@ -32,5 +28,9 @@ contribute
 - [ ] posix semaphores
 - [ ] sockets and networking
 
+<img src="https://i.pinimg.com/originals/b7/4a/77/b74a77048bb906cfc49fc5796234a646.jpg"
+data-canonical-src="https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png"
+width="60%" />
 
-
+ tifa takes inspiration from FFVII Tifa Lockhart – a strong, acomplished yet
+ gentle and unpretentious character with big heart for people
