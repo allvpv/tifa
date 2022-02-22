@@ -94,9 +94,7 @@ namespace tifa::impl {
         >::type;
         static constexpr bool is_safe = !is_same_ct<type, void>;
     };
-};
 
-namespace tifa::impl {
     template<typename lhs_t, typename rhs_t>
     consteval void safe_binary_operation_conversion_assert() {
         static_assert(binary_operation_conversion<lhs_t, rhs_t>::is_safe,

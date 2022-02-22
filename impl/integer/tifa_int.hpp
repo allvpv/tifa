@@ -17,7 +17,7 @@ namespace tifa::impl {
 }
 
 namespace tifa::impl {
-    /* Prevent creating tifa integer when underlying type has qualifiers. */
+    /* Do not instantiate integer<> class when underlying type has qualifiers */
     template<typename T>
     concept is_dequalified =
         is_same_ct<T, dequalified_t<T>>;
@@ -28,17 +28,12 @@ namespace tifa::impl {
         using underlying_t = I;
         underlying_t value;
 
-        // clang does not support this (recursion in literal type definition) (-_-)
-        //
-        // static constexpr integer min = limit<integer>::min;
-        // static constexpr integer max = limit<integer>::max;
-
-        static consteval integer min() { return limit<integer>::min; }
-        static consteval integer max() { return limit<integer>::max; }
+        static constexpr integer min = limit<integer>::min;
+        static constexpr integer max = limit<integer>::max;
 
         constexpr integer() { value = 0; }
 
-        /* Implicit constructors */
+        /* Implicit constructor */
         template<int_ct src_t>
         requires safe_conversion_from_to_ct<src_t, integer>
         constexpr integer(src_t src) {
@@ -52,8 +47,7 @@ namespace tifa::impl {
             return value;
         }
 
-
-        /* Explicit constructors */
+        /* Explicit constructor */
         template<int_ct src_t>
         constexpr explicit integer(src_t src) {
             value = static_cast<underlying_t>(get_primitive_value(src));
@@ -66,4 +60,3 @@ namespace tifa::impl {
         }
     };
 }
-

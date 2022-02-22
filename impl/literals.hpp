@@ -1,12 +1,15 @@
 #pragma once 
-#include "integer.hpp"
+#include <impl/integer/tifa_int.hpp>
 
 /* We have to write literal parser to get the value of literal as a constant
  * expression (-_-) C++ never fails to surprise me
  */
 
+#define CRITICAL_STATIC_ASSERT_FAIL  "This should not happen. " \
+    "Report the issue at https://github.com/allvpv/tifa/issues"
+
 namespace tifa::impl {
-    /* Universal literal (operator""_ literal) is not yet fully implemented. */
+    /* Universal literal (operator""_ literal) is not fully implemented yet */
     template <unsigned long long val, bool negative = false>
     struct integer_literal {
         consteval bool is_negative() const { return negative; }
@@ -105,10 +108,7 @@ namespace tifa::impl {
     requires (digit != '\'')
     consteval auto unpack_and_parse() {
         constexpr int parsed_digit = parse_digit<base>(digit);
-
-        static_assert(parsed_digit != -1,
-                "Wrong symbol in a literal. This should not happen. "
-                "Fill out bug request at: https://.../");
+        static_assert(parsed_digit != -1, CRITICAL_STATIC_ASSERT_FAIL);
 
         return unpack_and_parse<val * base + parsed_digit, base, number...>();
     }
@@ -177,32 +177,37 @@ namespace tifa::impl {
     template <char... number>
     requires is_hex_literal<number...> 
     consteval auto operator""_() {
-        static_assert(!is_bin_literal<number...>, "This should not happen.");
-        static_assert(!is_oct_literal<number...>, "This should not happen.");
+        static_assert(!is_bin_literal<number...> && !is_oct_literal<number...>,
+                CRITICAL_STATIC_ASSERT_FAIL);
+
         return hex_literal::parse<number...>();
     }
 
     template <char... number>
     requires is_oct_literal<number...> 
     consteval auto parse_literal() {
-        static_assert(!is_bin_literal<number...>, "This should not happen.");
-        static_assert(!is_hex_literal<number...>, "This should not happen.");
+        static_assert(!is_bin_literal<number...> && !is_hex_literal<number...>,
+                CRITICAL_STATIC_ASSERT_FAIL);
+
         return oct_literal::parse<number...>();
     }
 
     template <char... number>
     requires is_bin_literal<number...> 
     consteval auto parse_literal() {
-        static_assert(!is_oct_literal<number...>, "This should not happen.");
-        static_assert(!is_hex_literal<number...>, "This should not happen.");
+        static_assert(!is_oct_literal<number...> && !is_hex_literal<number...>,
+                CRITICAL_STATIC_ASSERT_FAIL);
+
         return bin_literal::parse<number...>();
     }
 
     template <char... number>
     consteval auto parse_literal() {
-        static_assert(!is_oct_literal<number...>, "This should not happen.");
-        static_assert(!is_hex_literal<number...>, "This should not happen.");
-        static_assert(!is_bin_literal<number...>, "This should not happen.");
+        static_assert(!is_oct_literal<number...> &&
+                      !is_hex_literal<number...> &&
+                      !is_bin_literal<number...>,
+                CRITICAL_STATIC_ASSERT_FAIL);
+
         return dec_literal::parse<number...>();
     }
 
@@ -211,4 +216,3 @@ namespace tifa::impl {
         int_ct<T> &&
         value <= u64(limit<T>::max).value;
 };
-

@@ -12,8 +12,6 @@ namespace tifa::impl {
 
     template<typename T>
     concept int_ct = tifa_int_ct<T> || primitive_int_ct<T>;
-
-
 }
 
 namespace tifa::impl {

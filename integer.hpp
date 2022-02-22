@@ -14,14 +14,16 @@ namespace tifa {
 }
 
 namespace tifa {
-    /* Evaluates to true if T is a built-in integer or proper instantiation of
-     * integer<> templated class */
+    /* true if T is a built-in integer or proper instantiation of integer<>
+     * templated class */
     template<typename T>
     concept int_ct = impl::int_ct<T>;
 
+    /* true if T is a proper instantiation of integer<> templated class */
     template<typename T>
     concept tifa_int_ct = impl::tifa_int_ct<T>;
 
+    /* true if T is a built-in integer */
     template<typename T>
     concept primitive_int_ct = impl::primitive_int_ct<T>;
 }
@@ -71,7 +73,6 @@ namespace tifa {
     };
 }
 
-/* Universal literal */
 namespace tifa {
     template <char... number>
     consteval auto operator""_() {
@@ -79,23 +80,25 @@ namespace tifa {
     }
 };
 
-#define __TIFA_IMPL_CREATE_OPERATOR(type)                                                   \
-    template <char... number>                                                               \
-    consteval type operator""_ ## type () {                                                 \
-        auto constexpr literal = impl::parse_literal<number...>();                          \
-        static_assert(impl::is_below_type_upper_limit_ct<literal.get(), type>,              \
-                      "Number in a literal cannot be represented by a specified type.");    \
-                                                                                            \
-        return static_cast<type>(literal.get());                                            \
+#define __TIFA_IMPL_CREATE_LITERAL_OPERATOR(type)                                          \
+    template <char... number>                                                              \
+    consteval type operator""_ ## type () {                                                \
+        auto constexpr literal = impl::parse_literal<number...>();                         \
+        static_assert(impl::is_below_type_upper_limit_ct<literal.get(), type>,             \
+                      "Number in a literal cannot be represented by a specified type.");   \
+                                                                                           \
+        return static_cast<type>(literal.get());                                           \
     }
 
 namespace tifa {
-__TIFA_IMPL_CREATE_OPERATOR(u8)
-__TIFA_IMPL_CREATE_OPERATOR(u16)
-__TIFA_IMPL_CREATE_OPERATOR(u32)
-__TIFA_IMPL_CREATE_OPERATOR(u64)
-__TIFA_IMPL_CREATE_OPERATOR(s8)
-__TIFA_IMPL_CREATE_OPERATOR(s16)
-__TIFA_IMPL_CREATE_OPERATOR(s32)
-__TIFA_IMPL_CREATE_OPERATOR(s64)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(u8)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(u16)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(u32)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(u64)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(s8)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(s16)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(s32)
+__TIFA_IMPL_CREATE_LITERAL_OPERATOR(s64)
 }
+
+#undef __TIFA_IMPL_CREATE_LITERAL_OPERATOR
