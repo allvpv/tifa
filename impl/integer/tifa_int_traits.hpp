@@ -51,14 +51,3 @@ namespace tifa::impl {
     using corresponding_tifa_int_t = typename wrap_in_tifa_type_helper<dequalified_t<T>>::type;
 }
 
-namespace tifa::impl {
-    template<primitive_int_ct T>
-    constexpr T get_primitive_value(T v) {
-        return v;
-    }
-
-    template<tifa_int_ct T>
-    constexpr typename T::underlying_t get_primitive_value(T v) {
-        return v.value;
-    }
-}

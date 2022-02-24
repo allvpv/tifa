@@ -28,23 +28,55 @@ namespace tifa {
     concept primitive_int_ct = impl::primitive_int_ct<T>;
 }
 
-#define __TIFA_IMPL_DEFINE_LOGIC_OPERATOR(operator_name, operand)                     \
-    template<int_ct lhs_t, int_ct rhs_t>                                              \
-    constexpr bool operator_name (lhs_t lhs, rhs_t rhs) {                             \
-        using namespace impl;                                                         \
-        safe_binary_operation_conversion_assert<lhs_t, rhs_t>();                      \
-        return get_primitive_value(lhs) operand get_primitive_value(rhs);             \
+#define __TIFA_IMPL_DEFINE_LOGIC_OPERATOR(operator_name, operand) \
+    template<primitive_int_ct lhs_t, tifa_int_ct rhs_t>           \
+    constexpr bool operator_name (lhs_t lhs, rhs_t rhs) {         \
+        using namespace impl;                                     \
+        safe_binary_operation_conversion_assert<lhs_t, rhs_t>();  \
+        return lhs operand rhs.value;                             \
+    }                                                             \
+                                                                  \
+    template<tifa_int_ct lhs_t, primitive_int_ct rhs_t>           \
+    constexpr bool operator_name (lhs_t lhs, rhs_t rhs) {         \
+        using namespace impl;                                     \
+        safe_binary_operation_conversion_assert<lhs_t, rhs_t>();  \
+        return lhs.value operand rhs;                             \
+    }                                                             \
+                                                                  \
+    template<tifa_int_ct lhs_t, tifa_int_ct rhs_t>                \
+    constexpr bool operator_name (lhs_t lhs, rhs_t rhs) {         \
+        using namespace impl;                                     \
+        safe_binary_operation_conversion_assert<lhs_t, rhs_t>();  \
+        return lhs.value operand rhs.value;                       \
     }
 
 #define __TIFA_IMPL_DEFINE_ARITHMETIC_OPERATOR(operator_name, operand)                \
-    template<int_ct lhs_t, int_ct rhs_t>                                              \
+    template<tifa_int_ct lhs_t, tifa_int_ct rhs_t>                                    \
     constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {                             \
         using namespace impl;                                                         \
         safe_binary_operation_conversion_assert<lhs_t, rhs_t>();                      \
         using result_type = typename binary_operation_conversion<lhs_t, rhs_t>::type; \
         return static_cast<corresponding_tifa_int_t<result_type>>(                    \
-                get_primitive_value(lhs) operand get_primitive_value(rhs));           \
-    }
+                lhs.value operand rhs.value);                                         \
+    }                                                                                 \
+                                                                                      \
+    template<tifa_int_ct lhs_t, primitive_int_ct rhs_t>                               \
+    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {                             \
+        using namespace impl;                                                         \
+        safe_binary_operation_conversion_assert<lhs_t, rhs_t>();                      \
+        using result_type = typename binary_operation_conversion<lhs_t, rhs_t>::type; \
+        return static_cast<corresponding_tifa_int_t<result_type>>(                    \
+                lhs.value operand rhs);                                               \
+    }                                                                                 \
+                                                                                      \
+    template<primitive_int_ct lhs_t, tifa_int_ct rhs_t>                               \
+    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {                             \
+        using namespace impl;                                                         \
+        safe_binary_operation_conversion_assert<lhs_t, rhs_t>();                      \
+        using result_type = typename binary_operation_conversion<lhs_t, rhs_t>::type; \
+        return static_cast<corresponding_tifa_int_t<result_type>>(                    \
+                lhs operand rhs.value);                                               \
+    }                                                                                 \
 
 
 namespace tifa {
