@@ -28,11 +28,6 @@ namespace tifa::impl {
         using underlying_t = I;
         underlying_t value;
 
-        static constexpr integer min = limit<integer>::min;
-        static constexpr integer max = limit<integer>::max;
-
-        constexpr integer() { value = 0; }
-
         /* Implicit constructor */
         template<int_ct src_t>
         requires safe_conversion_from_to_ct<src_t, integer>
@@ -68,10 +63,6 @@ namespace tifa::impl {
         constexpr integer operator-() const {
             static_assert(primitive_signed_int_ct<underlying_t>,
                     "To get two's compliment of unsigned integer, use compliment() method");
-            return -value;
-        }
-
-        constexpr integer compliment() const {
             return -value;
         }
     };

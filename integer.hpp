@@ -134,3 +134,10 @@ __TIFA_IMPL_CREATE_LITERAL_OPERATOR(s64)
 }
 
 #undef __TIFA_IMPL_CREATE_LITERAL_OPERATOR
+
+namespace tifa {
+    template<int_ct T>
+    constexpr T compliment(T int_object) {
+        return -int_object.value;
+    }
+}
