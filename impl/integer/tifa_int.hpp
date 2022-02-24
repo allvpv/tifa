@@ -37,7 +37,13 @@ namespace tifa::impl {
         template<int_ct src_t>
         requires safe_conversion_from_to_ct<src_t, integer>
         constexpr integer(src_t src) {
-            value = get_primitive_value(src);
+            value = src;
+        }
+
+        template<int_ct src_t>
+        requires safe_conversion_from_to_ct<src_t, integer>
+        constexpr void operator=(src_t src) {
+            value = src;
         }
 
         /* Implicit conversion operator */
@@ -50,13 +56,23 @@ namespace tifa::impl {
         /* Explicit constructor */
         template<int_ct src_t>
         constexpr explicit integer(src_t src) {
-            value = static_cast<underlying_t>(get_primitive_value(src));
+            value = static_cast<underlying_t>(src);
         }
 
         /* Explicit conversion operator */
         template<typename dst_t>
         constexpr explicit operator dst_t() const {
             return static_cast<dst_t>(value);
+        }
+
+        constexpr integer operator-() const {
+            static_assert(primitive_signed_int_ct<underlying_t>,
+                    "To get two's compliment of unsigned integer, use compliment() method");
+            return -value;
+        }
+
+        constexpr integer compliment() const {
+            return -value;
         }
     };
 }
