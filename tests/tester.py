@@ -9,6 +9,7 @@ import pathlib
 import units.helper
 import units.compiler_test as compiler_test
 import units.integer_template_test as integer_template_test
+import units.integer_implicit_conversion_test as integer_implicit_conversion_test
 
 def get_arguments():
     default_flags = "-Wall -Wextra --std=c++20 -nodefaultlibs -fno-rtti -lc -I.."
@@ -29,10 +30,6 @@ if __name__ == '__main__':
 
     compiler_test.register()
     integer_template_test.register()
+    integer_implicit_conversion_test.register()
 
     units.helper.Tester.runTests()
-
-
-
-    
-

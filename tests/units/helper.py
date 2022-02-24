@@ -73,8 +73,7 @@ class TestGenerator(object):
         self.counter = 0
         self.guard_name = guard_name
         self.path = None
-
-    test_list = [] # object of class Test
+        self.test_list = []
 
     def append_test(self, expression, should_compile):
         comment = ""
@@ -90,7 +89,6 @@ class TestGenerator(object):
                  + "#endif\n"
 
         self.test_list.append(Test(self.counter, test_str, should_compile))
-
         self.counter += 1
 
     def write_to_file(self, preamble, path):
