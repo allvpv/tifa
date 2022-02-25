@@ -12,7 +12,7 @@ import units.integer_template_test as integer_template_test
 import units.integer_implicit_conversion_test as integer_implicit_conversion_test
 
 def get_arguments():
-    default_flags = "-Wall -Wextra --std=c++20 -nodefaultlibs -fno-rtti -lc -I.."
+    default_flags = "-Wall -Wextra -Werror --std=c++20 -nodefaultlibs -fno-rtti -lc -I.."
     parser = argparse.ArgumentParser(description='')
 
     parser.add_argument('--resume', help="start testing from given number",

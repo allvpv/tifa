@@ -27,8 +27,8 @@ class IntType:
         return ("" if self.is_signed else "u") + "int" + str(self.bits) + "_t"
 
 def declare_var(typename, varname, value, is_constexpr=False):
-    return ("constexpr " if is_constexpr else "") + typename + " " + varname + \
-            " = " + typename + "(" + str(value) + ");\n"
+    return "[[maybe_unused]] " + ("constexpr " if is_constexpr else "") + typename + " " \
+        + varname + " = " + typename + "(" + str(value) + ");\n"
 
 def assign_expr(var1, var2):
     return var1 + " = " + var2 + ";\n"
