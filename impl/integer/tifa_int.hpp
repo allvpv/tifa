@@ -49,7 +49,7 @@ namespace tifa::impl {
         }
 
         /* Explicit constructor */
-        template<int_ct src_t>
+        template<typename src_t>
         constexpr explicit integer(src_t src) {
             value = static_cast<underlying_t>(src);
         }
@@ -60,10 +60,17 @@ namespace tifa::impl {
             return static_cast<dst_t>(value);
         }
 
+        /* Operators */
         constexpr integer operator-() const {
             static_assert(primitive_signed_int_ct<underlying_t>,
                     "To get two's compliment of unsigned integer, use compliment() method");
             return -value;
         }
+
+        constexpr integer operator++(int) { return value++; }
+        constexpr integer operator--(int) { return value--; }
+
+        constexpr integer& operator++() { ++value; return *this; }
+        constexpr integer& operator--() { --value; return *this; }
     };
 }

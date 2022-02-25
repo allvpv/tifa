@@ -99,6 +99,20 @@ namespace tifa::impl {
     consteval void safe_binary_operation_conversion_assert() {
         static_assert(binary_operation_conversion<lhs_t, rhs_t>::is_safe,
                 "Cannot safely convert between integral types. "
-                "Use proper numeric literal, change your types or use explicit cast.");
+                "Use proper numeric literal, change your types or use explicit cast");
+    }
+
+    template<typename lhs_t, typename rhs_t>
+    consteval void safe_assignment_operation_conversion_assert() {
+        static_assert(safe_conversion_from_to_ct<lhs_t, rhs_t>,
+                "Cannot safely convert between integral types. "
+                "Use proper numeric literal, change your types or use explicit cast");
+    }
+
+    template<typename lhs_t, typename rhs_t>
+    consteval void safe_bitwise_operation_conversion_assert() {
+        static_assert(sizeof(lhs_t) == sizeof(rhs_t),
+                "Binary operation on types with different width requested. "
+                "Use explicit cast or zeroext() or signext() method");
     }
 }

@@ -48,3 +48,29 @@ namespace tifa::impl {
         );
 };
 
+namespace tifa::impl {
+    template<typename T> struct unsigned_equivalent { using type = T; };
+    template<typename T> struct signed_equivalent { using type = T; };
+
+    template<> struct unsigned_equivalent<char> { using type = unsigned char; };
+    template<> struct unsigned_equivalent<signed char> { using type = unsigned char; };
+    template<> struct unsigned_equivalent<short> { using type = unsigned short; };
+    template<> struct unsigned_equivalent<int> { using type = unsigned int; };
+    template<> struct unsigned_equivalent<long> { using type = unsigned long; };
+    template<> struct unsigned_equivalent<long long> { using type = unsigned long long; };
+
+    template<> struct signed_equivalent<char> { using type = signed char; };
+    template<> struct signed_equivalent<unsigned char> { using type = signed char; };
+    template<> struct signed_equivalent<unsigned short> { using type = short; };
+    template<> struct signed_equivalent<unsigned int> { using type = int; };
+    template<> struct signed_equivalent<unsigned long> { using type = long; };
+    template<> struct signed_equivalent<unsigned long long> { using type = long long; };
+}
+
+namespace tifa::impl {
+    template<typename T>
+    using signed_equivalent_t = typename signed_equivalent<T>::type;
+
+    template<typename T>
+    using unsigned_equivalent_t = typename unsigned_equivalent<T>::type;
+}

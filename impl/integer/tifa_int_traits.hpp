@@ -50,4 +50,3 @@ namespace tifa::impl {
     template<int_ct T>
     using corresponding_tifa_int_t = typename wrap_in_tifa_type_helper<dequalified_t<T>>::type;
 }
-
