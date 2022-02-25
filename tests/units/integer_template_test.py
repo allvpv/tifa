@@ -49,7 +49,7 @@ def register():
         expressions_bad.append(expression(bad_type, "var" + str(varnum)))
         varnum += 1
 
-    generator = helper.TestGenerator("INTEGER_TEMPLATE_TEST")
+    generator = helper.StaticTestsGenerator("INTEGER_TEMPLATE_TEST")
     generator.append_test('\n'.join(expressions_good), True)
 
     for bad in expressions_bad:

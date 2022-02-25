@@ -3,7 +3,7 @@ from copy import deepcopy
 
 arguments=[]
 
-class Compiler:
+class Tester:
     # Compile without generating .o file (useful for constexpr or templates
     # testing)
     @staticmethod
@@ -36,7 +36,6 @@ class Compiler:
         return os.system(self.compiler_bin + " " + self.flags + " " +
                 additional_flags + " " + source_path + " -o " + object_path)
 
-class Tester:
     test_list=[] # (description, function); function shall return True if test
                  # is passed
 
@@ -47,9 +46,9 @@ class Tester:
     @staticmethod
     def runTests():
         total = len(Tester.test_list)
-        counter = 1
+        counter = arguments.resume
 
-        for (description, fun) in Tester.test_list:
+        for (description, fun) in Tester.test_list[arguments.resume:]:
             print("[" + str(counter) + "/" + str(total) + "] (" + description + ") ", end='')
             counter += 1
             if fun() == False:
@@ -58,7 +57,7 @@ class Tester:
             else:
                 print("OK")
 
-class Test:
+class StaticTest:
     number = None
     should_compile = None
     content = None
@@ -68,7 +67,7 @@ class Test:
         self.should_compile = should_compile
         self.content = content
 
-class TestGenerator(object):
+class StaticTestsGenerator(object):
     def __init__(self, guard_name):
         self.counter = 0
         self.guard_name = guard_name
@@ -88,7 +87,7 @@ class TestGenerator(object):
                  + "\n" + expression + "\n" \
                  + "#endif\n"
 
-        self.test_list.append(Test(self.counter, test_str, should_compile))
+        self.test_list.append(StaticTest(self.counter, test_str, should_compile))
         self.counter += 1
 
     def write_to_file(self, preamble, path):
@@ -99,7 +98,7 @@ class TestGenerator(object):
             f.write('\n'.join(test.content for test in self.test_list))
 
     def __compile(self, num, should_compile):
-        result = Compiler.dry_compile(self.path, "-D" + self.guard_name + "_" + str(num))
+        result = Tester.dry_compile(self.path, "-D" + self.guard_name + "_" + str(num))
 
         if should_compile:
             return result

@@ -59,7 +59,7 @@ def register():
     for (is_signed, bits) in product([True, False], [8, 16, 32, 64]):
         types.append(IntType(bits, is_signed))
 
-    generator = helper.TestGenerator("INTEGER_IMPLICIT_CONVERSION_TEST")
+    generator = helper.StaticTestsGenerator("INTEGER_IMPLICIT_CONVERSION_TEST")
     idx = 0
 
     for (t1, t2) in product(types, types):
