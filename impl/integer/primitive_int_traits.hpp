@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include <impl/type_traits.hpp>
 
 namespace tifa::impl {
@@ -36,7 +36,7 @@ namespace tifa::impl {
 
     template<typename T>
     concept primitive_unsigned_int_ct = is_primitive_unsigned_int<T>::test;
-    
+
     template<typename T>
     concept primitive_int_ct = primitive_signed_int_ct<T> || primitive_unsigned_int_ct<T>;
 
@@ -69,8 +69,8 @@ namespace tifa::impl {
 
 namespace tifa::impl {
     template<typename T>
-    using signed_equivalent_t = typename signed_equivalent<T>::type;
+    using signed_equivalent_t = copy_qualifiers_t<T, typename signed_equivalent<dequalified_t<T>>::type>;
 
     template<typename T>
-    using unsigned_equivalent_t = typename unsigned_equivalent<T>::type;
+    using unsigned_equivalent_t = copy_qualifiers_t<T, typename unsigned_equivalent<dequalified_t<T>>::type>;
 }

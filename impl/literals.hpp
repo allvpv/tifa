@@ -5,9 +5,6 @@
  * expression (-_-) C++ never fails to surprise me
  */
 
-#define CRITICAL_STATIC_ASSERT_FAIL  "This should not happen. " \
-    "Report the issue at https://github.com/allvpv/tifa/issues"
-
 namespace tifa::impl {
     /* Universal literal (operator""_ literal) is not fully implemented yet */
     template <unsigned long long val, bool negative = false>
@@ -108,7 +105,7 @@ namespace tifa::impl {
     requires (digit != '\'')
     consteval auto unpack_and_parse() {
         constexpr int parsed_digit = parse_digit<base>(digit);
-        static_assert(parsed_digit != -1, CRITICAL_STATIC_ASSERT_FAIL);
+        static_assert(parsed_digit != -1, __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
 
         return unpack_and_parse<val * base + parsed_digit, base, number...>();
     }
@@ -178,7 +175,7 @@ namespace tifa::impl {
     requires is_hex_literal<number...> 
     consteval auto operator""_() {
         static_assert(!is_bin_literal<number...> && !is_oct_literal<number...>,
-                CRITICAL_STATIC_ASSERT_FAIL);
+                 __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
 
         return hex_literal::parse<number...>();
     }
@@ -187,7 +184,7 @@ namespace tifa::impl {
     requires is_oct_literal<number...> 
     consteval auto parse_literal() {
         static_assert(!is_bin_literal<number...> && !is_hex_literal<number...>,
-                CRITICAL_STATIC_ASSERT_FAIL);
+                 __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
 
         return oct_literal::parse<number...>();
     }
@@ -196,7 +193,7 @@ namespace tifa::impl {
     requires is_bin_literal<number...> 
     consteval auto parse_literal() {
         static_assert(!is_oct_literal<number...> && !is_hex_literal<number...>,
-                CRITICAL_STATIC_ASSERT_FAIL);
+                 __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
 
         return bin_literal::parse<number...>();
     }
@@ -206,7 +203,7 @@ namespace tifa::impl {
         static_assert(!is_oct_literal<number...> &&
                       !is_hex_literal<number...> &&
                       !is_bin_literal<number...>,
-                CRITICAL_STATIC_ASSERT_FAIL);
+                 __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
 
         return dec_literal::parse<number...>();
     }

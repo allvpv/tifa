@@ -30,6 +30,8 @@ def get_arguments():
 if __name__ == '__main__':
     units.helper.arguments = get_arguments()
 
+    os.makedirs(".generated", exist_ok=True)
+
     compiler_test.register()
     integer_template_test.register()
     integer_implicit_conversion_test.register()
