@@ -1,5 +1,5 @@
 #pragma once 
-#include <impl/integer/tifa_int.hpp>
+#include <impl/tifa_integer.hpp>
 
 /* We have to write literal parser to get the value of literal as a constant
  * expression (-_-) C++ never fails to surprise me

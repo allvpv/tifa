@@ -1,5 +1,5 @@
 #pragma once
-#include <impl/integer/tifa_int.hpp>
+#include <impl/tifa_integer.hpp>
 #include <impl/literals.hpp>
 
 namespace tifa {
@@ -247,7 +247,7 @@ namespace tifa {
         using namespace impl;
         using src_t = decltype(int_object);
         safe_extend_operation_assert<src_t, dst_t>();
-        return static_cast<dst_t>(static_cast<impl::unsigned_equivalent_t<src_t>>(int_object));
+        return static_cast<dst_t>(static_cast<impl::primitive_unsigned_equivalent_t<src_t>>(int_object));
     }
 
     template<int_ct dst_t>
@@ -255,6 +255,6 @@ namespace tifa {
         using namespace impl;
         using src_t = decltype(int_object);
         safe_extend_operation_assert<src_t, dst_t>();
-        return static_cast<dst_t>(static_cast<impl::signed_equivalent_t<src_t>>(int_object));
+        return static_cast<dst_t>(static_cast<impl::primitive_signed_equivalent_t<src_t>>(int_object));
     }
 }
