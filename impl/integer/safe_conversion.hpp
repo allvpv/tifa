@@ -89,6 +89,14 @@ namespace tifa::impl {
     };
 
     template<typename T, typename U>
+    requires primitive_unsigned_int_ct<T> &&
+             primitive_signed_int_ct<U> &&
+             greater_size_ct<U, T>
+    struct arithmetic_operation_conversion_helper<T, U> {
+        using type = U;
+    };
+
+    template<typename T, typename U>
     struct arithmetic_operation_conversion;
 
     template<typename T, typename U>
@@ -193,7 +201,7 @@ namespace tifa::impl {
 
         static_assert(safety_iff_equal_size, __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
         static_assert(sizeof(lhs_t) == sizeof(rhs_t),
-                "arithmetic operation on types with different width requested. "
+                "Bitwise operation on types with different width requested. "
                 "Use explicit cast or zeroext() or signext() method");
     }
 

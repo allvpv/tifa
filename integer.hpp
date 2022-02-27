@@ -3,14 +3,14 @@
 #include <impl/literals.hpp>
 
 namespace tifa {
-    using u8 = impl::u8;
-    using s8 = impl::s8;
-    using u16 = impl::u16;
-    using s16 = impl::s16;
-    using u32 = impl::u32;
-    using s32 = impl::s32;
-    using u64 = impl::u64;
-    using s64 = impl::s64;
+    using u8 = impl::integer<uint8_t>;
+    using s8 = impl::integer<int8_t>;
+    using u16 = impl::integer<uint16_t>;
+    using s16 = impl::integer<int16_t>;
+    using u32 = impl::integer<uint32_t>;
+    using s32 = impl::integer<int32_t>;
+    using u64 = impl::integer<uint64_t>;
+    using s64 = impl::integer<int64_t>;
 }
 
 namespace tifa {
@@ -239,7 +239,7 @@ __TIFA_IMPL_CREATE_LITERAL_OPERATOR(s64)
 namespace tifa {
     template<int_ct T>
     constexpr T compliment(T int_object) {
-        return -int_object.value;
+        return T(-int_object.value);
     }
 
     template<int_ct dst_t>

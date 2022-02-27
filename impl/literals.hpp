@@ -22,25 +22,26 @@ namespace tifa::impl {
 
     template<>
     consteval int parse_digit<16>(char digit) {
-        switch (digit) {
-            case '0': return 0;
-            case '1': return 1;
-            case '2': return 2;
-            case '3': return 3;
-            case '4': return 4;
-            case '5': return 5;
-            case '6': return 6;
-            case '7': return 7;
-            case '8': return 8;
-            case '9': return 9;
-            case 'A': return 10;
-            case 'B': return 11;
-            case 'C': return 12;
-            case 'D': return 13;
-            case 'E': return 14;
-            case 'F': return 15;
-            default:  return -1;
-        }
+        /* The standard does not guarantee any continuity in character encoding,
+         * so we (probably) cannot do any clever :(
+         */
+        if(digit == '0') return 0;
+        else if(digit == '1') return 1;
+        else if(digit == '2') return 2;
+        else if(digit == '3') return 3;
+        else if(digit == '4') return 4;
+        else if(digit == '5') return 5;
+        else if(digit == '6') return 6;
+        else if(digit == '7') return 7;
+        else if(digit == '8') return 8;
+        else if(digit == '9') return 9;
+        else if(digit == 'A' || digit == 'a') return 10;
+        else if(digit == 'B' || digit == 'b') return 11;
+        else if(digit == 'C' || digit == 'c') return 12;
+        else if(digit == 'D' || digit == 'd') return 13;
+        else if(digit == 'E' || digit == 'e') return 14;
+        else if(digit == 'F' || digit == 'f') return 15;
+        else return -1 ;
     }
 
     template<>
@@ -172,8 +173,18 @@ namespace tifa::impl {
 
 namespace tifa::impl {
     template <char... number>
+    consteval auto parse_literal() {
+        static_assert(!is_oct_literal<number...> &&
+                      !is_hex_literal<number...> &&
+                      !is_bin_literal<number...>,
+                 __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
+
+        return dec_literal::parse<number...>();
+    }
+
+    template <char... number>
     requires is_hex_literal<number...> 
-    consteval auto operator""_() {
+    consteval auto parse_literal() {
         static_assert(!is_bin_literal<number...> && !is_oct_literal<number...>,
                  __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
 
@@ -198,18 +209,8 @@ namespace tifa::impl {
         return bin_literal::parse<number...>();
     }
 
-    template <char... number>
-    consteval auto parse_literal() {
-        static_assert(!is_oct_literal<number...> &&
-                      !is_hex_literal<number...> &&
-                      !is_bin_literal<number...>,
-                 __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
-
-        return dec_literal::parse<number...>();
-    }
-
     template <unsigned long long value, typename T>
     concept is_below_type_upper_limit_ct = 
         int_ct<T> &&
-        value <= u64(limit<T>::max).value;
+        value <= (unsigned long long) (limit<T>::max.value);
 };

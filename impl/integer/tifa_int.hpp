@@ -6,17 +6,6 @@
 #include <impl/integer/safe_conversion.hpp>
 
 namespace tifa::impl {
-    using u8 = integer<uint8_t>;
-    using s8 = integer<int8_t>;
-    using u16 = integer<uint16_t>;
-    using s16 = integer<int16_t>;
-    using u32 = integer<uint32_t>;
-    using s32 = integer<int32_t>;
-    using u64 = integer<uint64_t>;
-    using s64 = integer<int64_t>;
-}
-
-namespace tifa::impl {
     /* Do not instantiate integer<> class when underlying type has qualifiers */
     template<typename T>
     concept is_dequalified =
@@ -64,7 +53,7 @@ namespace tifa::impl {
         constexpr integer operator-() const {
             static_assert(primitive_signed_int_ct<underlying_t>,
                     "To get two's compliment of unsigned integer, use compliment() method");
-            return -value;
+            return integer(-value);
         }
 
         constexpr integer operator++(int) { return value++; }

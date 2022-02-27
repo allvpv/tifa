@@ -35,7 +35,9 @@ namespace tifa::impl {
 
 namespace tifa::impl {
     template<typename T>
-    struct wrap_in_tifa_type_helper;
+    struct wrap_in_tifa_type_helper {
+        using type = void;
+    };
 
     template<primitive_int_ct T>
     struct wrap_in_tifa_type_helper<T> {
@@ -47,6 +49,6 @@ namespace tifa::impl {
         using type = T;
     };
 
-    template<int_ct T>
+    template<typename T>
     using corresponding_tifa_int_t = typename wrap_in_tifa_type_helper<dequalified_t<T>>::type;
 }
