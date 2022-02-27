@@ -52,7 +52,7 @@ namespace tifa::impl {
         /* Operators */
         constexpr integer operator-() const {
             static_assert(primitive_signed_int_ct<underlying_t>,
-                    "To get two's compliment of unsigned integer, use compliment() method");
+                    "To get two's complement of unsigned integer, use complement() method");
             return integer(-value);
         }
 
