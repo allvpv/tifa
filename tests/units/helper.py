@@ -1,40 +1,36 @@
 import os
-from copy import deepcopy
+import sys
+import subprocess
 
-arguments=[]
+arguments = None
 
 class Tester:
     # Compile without generating .o file (useful for constexpr or templates
     # testing)
     @staticmethod
     def dry_compile(source_path, additional_flags=""):
-        compile_commands = arguments.compiler + " " + arguments.flags + " " + \
-                additional_flags + " " + source_path + " -S -o -"
+        flags = list(filter(lambda item : item != '', [
+            *arguments.flags.split(' '),
+            *additional_flags.split(' '),
+            '-S', '-o' , '-'
+        ]))
 
-        redirection = " > /dev/null 2> /dev/null"
+        compile_commands = [arguments.compiler, *flags, source_path]
 
         if arguments.verbose:
-            print('\n' + compile_commands)
+            print(' '.join(compile_commands))
 
-        if os.system(compile_commands + redirection) == 0:
-            return True
-        else:
-            return False
+        retcode = subprocess.run(
+            compile_commands,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        ).returncode
 
-    @staticmethod
-    def compile(source_path, additional_flags="", object_path=None):
+        if retcode < 0:
+            print("Compiler terminated by signal, exiting...")
+            sys.exit(1)
 
-        (src_dir, src_file) = os.path.split(source_path)
-        obj_file = os.path.splitext(src_file)[0] + ".o"
-
-        if (object_path == None):
-            object_path = src_dir + "/object/" + obj_file
-
-        retcode = os.system("mkdir -p " + os.path.split(object_path)[0])
-        assert(retcode == 0)
-
-        return os.system(self.compiler_bin + " " + self.flags + " " +
-                additional_flags + " " + source_path + " -o " + object_path)
+        return not bool(retcode)
 
     test_list=[] # (description, function); function shall return True if test
                  # is passed
@@ -48,7 +44,7 @@ class Tester:
         total = len(Tester.test_list)
         counter = arguments.resume
 
-        for (description, fun) in Tester.test_list[arguments.resume:]:
+        for (description, fun) in Tester.test_list[(arguments.resume - 1):]:
             print("[" + str(counter) + "/" + str(total) + "] (" + description + ") ", end='')
             counter += 1
             if fun() == False:
@@ -63,7 +59,7 @@ class StaticTest:
     content = None
 
     def __init__(self, number, content, should_compile):
-        self.number = deepcopy(number)
+        self.number = number
         self.should_compile = should_compile
         self.content = content
 
