@@ -12,6 +12,7 @@ import units.compiler_test as compiler_test
 import units.integer_template_test as integer_template_test
 import units.integer_implicit_conversion_test as integer_implicit_conversion_test
 import units.integer_arithmetic_test as integer_arithmetic_test
+import units.integer_bitwise_test as integer_bitwise_test
 
 def get_arguments():
     default_flags = "-Wall -Wextra -Werror --std=c++20 -nodefaultlibs -fno-rtti -lc -I.."
@@ -25,7 +26,7 @@ def get_arguments():
 
     parser.add_argument('--compiler', help="compiler binary (default g++)",
             default = "g++", metavar="BIN")
-    
+
     args = parser.parse_args()
     return args
 
@@ -39,4 +40,5 @@ if __name__ == '__main__':
     integer_template_test.register()
     integer_implicit_conversion_test.register()
     integer_arithmetic_test.register()
+    integer_bitwise_test.register()
     units.helper.Tester.runTests()

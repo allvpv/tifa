@@ -75,27 +75,27 @@ def declare_variable(typename, varname, value, is_constexpr = False, maybe_unuse
            ("constexpr " if is_constexpr else "") + \
            typename + " " + varname + " = " + typename + "(" + str(value) + ");\n"
 
-operators_arithmetic = ["+", "-", "*", "/", "%"]
-operators_logic = ["==", "!=", "<", ">", "<=", ">="]
-operators_bitwise = ["^", "&", "|"]
-operators_arithmetic_assignment = ["+=", "-=", "*=", "/=", "%="]
-operators_bitwise_assignment = ["^=", "&=", "|="]
+def declare_tifa(name, type_obj, value, is_constexpr = True, maybe_unused = False):
+    return declare_variable(type_obj.tifa_t_str(), name + "t", value, is_constexpr, maybe_unused)
 
-def do_arithm_op(v1, v2, operator, restype):
-    sumval = None
+def declare_primitive(name, type_obj, value, is_constexpr = True, maybe_unused = False):
+    return declare_variable(type_obj.primitive_t_str(), name + "p", value, is_constexpr, maybe_unused)
 
-    match operator:
-        case '+':
-            sumval = v1.val + v2.val
-        case '-':
-            sumval = v1.val - v2.val
-        case '/':
-            sumval = abs(v1.val) // abs(v2.val)
-            if (v1.val < 0 or v2.val < 0) and not (v1.val < 0 and v2.val < 0):
-                sumval *= -1
-        case '*':
-            sumval = v1.val * v2.val
-        case '%':
-            sumval = abs(v1.val) % abs(v2.val) * (-1 if v1.val < 0 else 1)
+#operators_logic = ["==", "!=", "<", ">", "<=", ">="]
+#operators_arithmetic_assignment = ["+=", "-=", "*=", "/=", "%="]
+#operators_bitwise_assignment = ["^=", "&=", "|="]
 
-    return Value(restype, sumval)
+def operators_expr_good(var1, var2, operator, expected_type, expected_value):
+    expression = (var1 + " " + operator + " " + var2)
+    is_type_ok = "static_assert(is_same_ct<decltype(" + expression + "), " + expected_type + ">);\n"
+    is_value_ok = "static_assert((" + expression + ") == " + expected_value + ");"
+    return is_type_ok + is_value_ok
+
+def operators_expr_bad(var1, var2, operator):
+    return "(void) (" + var1 + " " + operator + " " + var2 + ");"
+
+def append_wrap_test(generator, expression, should_compile):
+    preamble = "void test() {\n"
+    epilogue = "\n}"
+
+    generator.append_test(preamble + expression + epilogue, should_compile)
