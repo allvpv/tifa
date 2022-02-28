@@ -81,7 +81,6 @@ def declare_tifa(name, type_obj, value, is_constexpr = True, maybe_unused = Fals
 def declare_primitive(name, type_obj, value, is_constexpr = True, maybe_unused = False):
     return declare_variable(type_obj.primitive_t_str(), name + "p", value, is_constexpr, maybe_unused)
 
-#operators_logic = ["==", "!=", "<", ">", "<=", ">="]
 #operators_arithmetic_assignment = ["+=", "-=", "*=", "/=", "%="]
 #operators_bitwise_assignment = ["^=", "&=", "|="]
 
