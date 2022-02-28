@@ -65,8 +65,7 @@ __TIFA_IMPL_DEFINE_LOGIC_OPERATOR(operator>=, >=)
         using namespace impl;                                                             \
         safe_arithmetic_operation_conversion_assert<lhs_t, rhs_t>();                      \
         using result_type = typename arithmetic_operation_conversion<lhs_t, rhs_t>::type; \
-        return static_cast<corresponding_tifa_int_t<result_type>>(                        \
-                lhs.value operand rhs.value);                                             \
+        return static_cast<result_type>(lhs.value operand rhs.value);                     \
     }                                                                                     \
                                                                                           \
     template<tifa_int_ct lhs_t, primitive_int_ct rhs_t>                                   \
@@ -74,8 +73,7 @@ __TIFA_IMPL_DEFINE_LOGIC_OPERATOR(operator>=, >=)
         using namespace impl;                                                             \
         safe_arithmetic_operation_conversion_assert<lhs_t, rhs_t>();                      \
         using result_type = typename arithmetic_operation_conversion<lhs_t, rhs_t>::type; \
-        return static_cast<corresponding_tifa_int_t<result_type>>(                        \
-                lhs.value operand rhs);                                                   \
+        return static_cast<result_type>(lhs.value operand rhs);                           \
     }                                                                                     \
                                                                                           \
     template<primitive_int_ct lhs_t, tifa_int_ct rhs_t>                                   \
@@ -83,8 +81,7 @@ __TIFA_IMPL_DEFINE_LOGIC_OPERATOR(operator>=, >=)
         using namespace impl;                                                             \
         safe_arithmetic_operation_conversion_assert<lhs_t, rhs_t>();                      \
         using result_type = typename arithmetic_operation_conversion<lhs_t, rhs_t>::type; \
-        return static_cast<corresponding_tifa_int_t<result_type>>(                        \
-                lhs operand rhs.value);                                                   \
+        return static_cast<result_type>(lhs operand rhs.value);                           \
     }
 
 namespace tifa {
@@ -95,32 +92,29 @@ __TIFA_IMPL_DEFINE_ARITHMETIC_OPERATOR(operator/, /)
 __TIFA_IMPL_DEFINE_ARITHMETIC_OPERATOR(operator%, %)
 }
 
-#define __TIFA_IMPL_DEFINE_BITWISE_OPERATOR(operator_name, operand)     \
-    template<tifa_int_ct lhs_t, tifa_int_ct rhs_t>                      \
-    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {               \
-        using namespace impl;                                           \
-        safe_bitwise_operation_conversion_assert<lhs_t, rhs_t>();       \
-        using result_type = corresponding_tifa_int_t<                   \
-            typename bitwise_operation_conversion<lhs_t, rhs_t>::type>; \
-        return static_cast<result_type>(lhs.value operand rhs.value);   \
-    }                                                                   \
-                                                                        \
-    template<primitive_int_ct lhs_t, tifa_int_ct rhs_t>                 \
-    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {               \
-        using namespace impl;                                           \
-        safe_bitwise_operation_conversion_assert<lhs_t, rhs_t>();       \
-        using result_type = corresponding_tifa_int_t<                   \
-            typename bitwise_operation_conversion<lhs_t, rhs_t>::type>; \
-        return static_cast<result_type>(lhs operand rhs.value);         \
-    }                                                                   \
-                                                                        \
-    template<tifa_int_ct lhs_t, primitive_int_ct rhs_t>                 \
-    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {               \
-        using namespace impl;                                           \
-        safe_bitwise_operation_conversion_assert<lhs_t, rhs_t>();       \
-        using result_type = corresponding_tifa_int_t<                   \
-            typename bitwise_operation_conversion<lhs_t, rhs_t>::type>; \
-        return static_cast<result_type>(lhs.value operand rhs);         \
+#define __TIFA_IMPL_DEFINE_BITWISE_OPERATOR(operator_name, operand)                     \
+    template<tifa_int_ct lhs_t, tifa_int_ct rhs_t>                                      \
+    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {                               \
+        using namespace impl;                                                           \
+        safe_bitwise_operation_conversion_assert<lhs_t, rhs_t>();                       \
+        using result_type = typename bitwise_operation_conversion<lhs_t, rhs_t>::type;  \
+        return static_cast<result_type>(lhs.value operand rhs.value);                   \
+    }                                                                                   \
+                                                                                        \
+    template<primitive_int_ct lhs_t, tifa_int_ct rhs_t>                                 \
+    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {                               \
+        using namespace impl;                                                           \
+        safe_bitwise_operation_conversion_assert<lhs_t, rhs_t>();                       \
+        using result_type = typename bitwise_operation_conversion<lhs_t, rhs_t>::type;  \
+        return static_cast<result_type>(lhs operand rhs.value);                         \
+    }                                                                                   \
+                                                                                        \
+    template<tifa_int_ct lhs_t, primitive_int_ct rhs_t>                                 \
+    constexpr auto operator_name (lhs_t lhs, rhs_t rhs) {                               \
+        using namespace impl;                                                           \
+        safe_bitwise_operation_conversion_assert<lhs_t, rhs_t>();                       \
+        using result_type = typename bitwise_operation_conversion<lhs_t, rhs_t>::type;  \
+        return static_cast<result_type>(lhs.value operand rhs);                         \
     }
 
 namespace tifa {
@@ -201,8 +195,8 @@ __TIFA_IMPL_DEFINE_ARITHMETIC_ASSIGNMENT_OPERATOR(operator%=, %=)
 namespace tifa {
     template<int_ct T>
     struct limit {
-        static constexpr T min = impl::limit<T>::min;
-        static constexpr T max = impl::limit<T>::max;
+        static constexpr T min = impl::limit_helper<dequalified_t<T>>::min;
+        static constexpr T max = impl::limit_helper<dequalified_t<T>>::max;
     };
 }
 
@@ -212,6 +206,13 @@ namespace tifa {
         return impl::parse_literal<number...>();
     }
 };
+
+namespace tifa::impl {
+    template <unsigned long long value, typename T>
+    concept is_below_type_upper_limit_ct = 
+        int_ct<T> &&
+        value <= (unsigned long long) (limit<T>::max.value);
+}
 
 #define __TIFA_IMPL_CREATE_LITERAL_OPERATOR(type)                                          \
     template <char... number>                                                              \
@@ -238,23 +239,47 @@ __TIFA_IMPL_CREATE_LITERAL_OPERATOR(s64)
 
 namespace tifa {
     template<int_ct T>
-    constexpr T complement(T int_object) {
-        return T(-int_object.value);
+    constexpr T complement(T var) {
+        return T(-var.value);
     }
 
     template<int_ct dst_t>
-    constexpr dst_t zeroext(auto int_object) {
+    constexpr dst_t zeroext(tifa_int_ct auto var) {
         using namespace impl;
-        using src_t = decltype(int_object);
+        using src_t = decltype(var);
+        using cast_t = primitive_unsigned_equivalent_t<typename src_t::underlying_t>;
+
         safe_extend_operation_assert<src_t, dst_t>();
-        return static_cast<dst_t>(static_cast<impl::primitive_unsigned_equivalent_t<src_t>>(int_object));
+        return (dst_t) (cast_t) var;
     }
 
     template<int_ct dst_t>
-    constexpr dst_t signext(auto int_object) {
+    constexpr dst_t zeroext(primitive_int_ct auto var) {
         using namespace impl;
-        using src_t = decltype(int_object);
+        using src_t = decltype(var);
+        using cast_t = primitive_unsigned_equivalent_t<src_t>;
+
         safe_extend_operation_assert<src_t, dst_t>();
-        return static_cast<dst_t>(static_cast<impl::primitive_signed_equivalent_t<src_t>>(int_object));
+        return (dst_t) (cast_t) var;
+    }
+
+    template<int_ct dst_t>
+    constexpr dst_t signext(tifa_int_ct auto var) {
+        using namespace impl;
+        using src_t = decltype(var);
+        using cast_t = primitive_signed_equivalent_t<typename src_t::underlying_t>;
+
+        safe_extend_operation_assert<src_t, dst_t>();
+        return (dst_t) (cast_t) var;
+    }
+
+    template<int_ct dst_t>
+    constexpr dst_t signext(primitive_int_ct auto var) {
+        using namespace impl;
+        using src_t = decltype(var);
+        using cast_t = primitive_signed_equivalent_t<src_t>;
+
+        safe_extend_operation_assert<src_t, dst_t>();
+        return (dst_t) (cast_t) var;
     }
 }

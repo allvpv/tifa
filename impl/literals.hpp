@@ -208,9 +208,4 @@ namespace tifa::impl {
 
         return bin_literal::parse<number...>();
     }
-
-    template <unsigned long long value, typename T>
-    concept is_below_type_upper_limit_ct = 
-        int_ct<T> &&
-        value <= (unsigned long long) (limit<T>::max.value);
 };

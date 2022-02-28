@@ -130,125 +130,118 @@ namespace tifa::impl {
 
 namespace tifa::impl {
     template<typename T>
-    struct get_underlying_primitive_type_helper;
+    struct corresponding_primitive_type_helper;
 
     template<primitive_int_ct T>
-    struct get_underlying_primitive_type_helper<T> {
+    struct corresponding_primitive_type_helper<T> {
         using type = T;
     };
 
     template<tifa_int_ct T>
-    struct get_underlying_primitive_type_helper<T> {
+    struct corresponding_primitive_type_helper<T> {
         using type = typename T::underlying_t;
     };
 
     template<int_ct T>
-    using underlying_primitive_t =
-        typename get_underlying_primitive_type_helper<dequalified_t<T>>::type;
+    using corresponding_primitive_t =
+        typename corresponding_primitive_type_helper<dequalified_t<T>>::type;
 }
 
 namespace tifa::impl {
     template<typename T>
-    struct wrap_in_tifa_type_helper {
+    struct corresponding_tifa_type_helper {
         using type = void;
     };
 
     template<primitive_int_ct T>
-    struct wrap_in_tifa_type_helper<T> {
+    struct corresponding_tifa_type_helper<T> {
         using type = integer<T>;
     };
 
     template<tifa_int_ct T>
-    struct wrap_in_tifa_type_helper<T> {
+    struct corresponding_tifa_type_helper<T> {
         using type = T;
     };
 
     template<typename T>
-    using corresponding_tifa_int_t = typename wrap_in_tifa_type_helper<dequalified_t<T>>::type;
+    using corresponding_tifa_int_t =
+        typename corresponding_tifa_type_helper<dequalified_t<T>>::type;
 }
 
 namespace tifa::impl {
     template<typename T>
-    struct integer_info_helper;
+    struct limit_helper;
 
     template<>
-    struct integer_info_helper<signed char> {
+    struct limit_helper<signed char> {
         static constexpr signed char min = SCHAR_MIN;
         static constexpr signed char max = SCHAR_MAX;
     };
 
     template<>
-    struct integer_info_helper<short> {
+    struct limit_helper<short> {
         static constexpr short min = SHRT_MIN;
         static constexpr short max = SHRT_MAX;
     };
 
     template<>
-    struct integer_info_helper<int> {
+    struct limit_helper<int> {
         static constexpr int min = INT_MIN;
         static constexpr int max = INT_MAX;
     };
 
     template<>
-    struct integer_info_helper<long> {
+    struct limit_helper<long> {
         static constexpr long min = LONG_MIN;
         static constexpr long max = LONG_MAX;
     };
 
     template<>
-    struct integer_info_helper<long long> {
+    struct limit_helper<long long> {
         static constexpr long long min = LLONG_MIN;
         static constexpr long long max = LLONG_MAX;
     };
 
     template<>
-    struct integer_info_helper<unsigned char> {
+    struct limit_helper<unsigned char> {
         static constexpr unsigned char min = 0;
         static constexpr unsigned char max = UCHAR_MAX;
     };
 
     template<>
-    struct integer_info_helper<unsigned short> {
+    struct limit_helper<unsigned short> {
         static constexpr unsigned short min = 0;
         static constexpr unsigned short max = USHRT_MAX;
     };
 
     template<>
-    struct integer_info_helper<unsigned int> {
+    struct limit_helper<unsigned int> {
         static constexpr unsigned int min = 0;
         static constexpr unsigned int max = UINT_MAX;
     };
 
     template<>
-    struct integer_info_helper<unsigned long> {
+    struct limit_helper<unsigned long> {
         static constexpr unsigned long min = 0;
         static constexpr unsigned long max = ULONG_MAX;
     };
 
     template<>
-    struct integer_info_helper<unsigned long long> {
+    struct limit_helper<unsigned long long> {
         static constexpr long long min = 0;
         static constexpr long long max = ULLONG_MAX;
     };
 
     template<>
-    struct integer_info_helper<char> {
+    struct limit_helper<char> {
         static constexpr char min = CHAR_MIN;
         static constexpr char max = CHAR_MAX;
     };
 
     template<tifa_int_ct T>
-    struct integer_info_helper<T> {
-        static constexpr T min = integer_info_helper<typename T::underlying_t>::min;
-        static constexpr T max = integer_info_helper<typename T::underlying_t>::max;
-    };
-};
-
-namespace tifa::impl {
-    template<int_ct T>
-    struct limit {
-        static constexpr T min = integer_info_helper<dequalified_t<T>>::min;
-        static constexpr T max = integer_info_helper<dequalified_t<T>>::max;
+    struct limit_helper<T> {
+        static constexpr T min = limit_helper<typename T::underlying_t>::min;
+        static constexpr T max = limit_helper<typename T::underlying_t>::max;
     };
 };
 
@@ -266,8 +259,8 @@ namespace tifa::impl {
     template<typename int_src_t, typename int_dst_t>
     concept safe_conversion_from_to_ct =
             safe_conversion_from_to_helper_ct<
-                underlying_primitive_t<int_src_t>,
-                underlying_primitive_t<int_dst_t>
+                corresponding_primitive_t<int_src_t>,
+                corresponding_primitive_t<int_dst_t>
             >;
 };
 
@@ -319,10 +312,11 @@ namespace tifa::impl {
     template<typename T, typename U>
     requires int_ct<T> && int_ct<U>
     struct arithmetic_operation_conversion<T, U> {
-        using type = typename arithmetic_operation_conversion_helper<
-            underlying_primitive_t<T>,
-            underlying_primitive_t<U>
-        >::type;
+        using type = corresponding_tifa_int_t<
+            typename arithmetic_operation_conversion_helper<
+                corresponding_primitive_t<T>,
+                corresponding_primitive_t<U>
+            >::type>;
         static constexpr bool is_safe = !is_same_ct<type, void>;
     };
 }
@@ -388,8 +382,8 @@ namespace tifa::impl {
     template<typename T, typename U>
     struct bitwise_operation_conversion {
         using type = typename bitwise_operation_conversion_helper<
-            underlying_primitive_t<T>,
-            underlying_primitive_t<U>
+            corresponding_primitive_t<T>,
+            corresponding_primitive_t<U>
         >::type;
         static constexpr bool is_safe = !is_same_ct<type, void>;
     };
@@ -412,9 +406,9 @@ namespace tifa::impl {
 
     template<typename lhs_t, typename rhs_t>
     consteval void safe_bitwise_operation_conversion_assert() {
-        constexpr bool safety_iff_equal_size =
-            (sizeof(lhs_t) == sizeof(rhs_t) && bitwise_operation_conversion<lhs_t, rhs_t>::is_safe) ||
-            (sizeof(lhs_t) != sizeof(rhs_t) && !bitwise_operation_conversion<lhs_t, rhs_t>::is_safe);
+        constexpr bool is_safe = bitwise_operation_conversion<lhs_t, rhs_t>::is_safe;
+        constexpr bool equal_size = sizeof(lhs_t) == sizeof(rhs_t);
+        constexpr bool safety_iff_equal_size = (equal_size && is_safe) || (!equal_size && !is_safe);
 
         static_assert(safety_iff_equal_size, __TIFA_IMPL_CRITICAL_STATIC_ASSERT_FAILURE);
         static_assert(sizeof(lhs_t) == sizeof(rhs_t),
@@ -424,7 +418,7 @@ namespace tifa::impl {
 
     template<typename src_t, typename dst_t>
     consteval void safe_extend_operation_assert() {
-        static_assert(sizeof(dst_t) <= sizeof(src_t),
+        static_assert(sizeof(dst_t) >= sizeof(src_t),
                 "Extension is possible only from narrower to wider type");
     }
 }
