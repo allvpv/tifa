@@ -381,10 +381,11 @@ namespace tifa::impl {
 
     template<typename T, typename U>
     struct bitwise_operation_conversion {
-        using type = typename bitwise_operation_conversion_helper<
-            corresponding_primitive_t<T>,
-            corresponding_primitive_t<U>
-        >::type;
+        using type = corresponding_tifa_int_t<
+            typename bitwise_operation_conversion_helper<
+                corresponding_primitive_t<T>,
+                corresponding_primitive_t<U>
+            >::type>;
         static constexpr bool is_safe = !is_same_ct<type, void>;
     };
 }
