@@ -39,7 +39,7 @@ def testing_expr_good(var1, var2, operator, expected_type, expected_value):
     return is_type_ok + is_value_ok
 
 def testing_expr_bad(var1, var2, operator):
-    return var1 + " " + operator + " " + var2 + "\n"
+    return "(void) (" + var1 + " " + operator + " " + var2 + ");"
 
 def register():
     generator = StaticTestsGenerator("INTEGER_ARITHMETIC_TEST")
